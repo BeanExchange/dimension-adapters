@@ -45,16 +45,10 @@ const fetch = async (fetchOptions: FetchOptions): Promise<FetchResult> => {
   });
   const dailyVolume = createBalances();
 
-  const swapInterface = new ethers.Interface([swapEventABI]);
-
   await Promise.all(
     Object.keys(filteredPairs).map(async (pair) => {
       const [token0, token1] = pairObject[pair];
-      const event = swapInterface.getEvent("SpotSwapEvent");
-      if (!event) {
-        throw new Error("Event not found");
-      }
-      const logs = await getLogs({ target: pair, eventAbi: event });
+      const logs = await getLogs({ target: pair, eventAbi: swapEventABI });
       logs.forEach((log) => {
         const tenToPowerDecimals0 = fromUInt(
           BigInt(10 ** Number(decimals[pair][0]))
